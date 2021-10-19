@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using IndexingModule;
 
 namespace IndexingModule
 {
@@ -6,7 +8,7 @@ namespace IndexingModule
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Image image = new(@"E:\OneDrive\Изображения\Photos\1.jpg");
         }
     }
 }
