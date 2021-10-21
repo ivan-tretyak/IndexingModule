@@ -16,7 +16,7 @@ namespace IndexingModule
         public string Manufacturer; //ExifDirectoryBase.TagMake from ExifIfd0Directory
         public string Model; //ExifDirectoryBase.TagModel from ExifIfd0Directory
         public int Orientation; //ExifDirectoryBase.TagOrientation from ExifIfd0Directory
-        public double FocalLenght; //ExifDirectoryBase.TagFocalLength from ExifSubIfdDirectory
+        public double FocalLength; //ExifDirectoryBase.TagFocalLength from ExifSubIfdDirectory
         //public int WhiteBalance; Mode or Value?
         public int ISO; //ExifDirectoryBase.TagIsoEquivalent from ExifSubIfdDirectory
         public int TimeExposureDenominator; //ExifDirectoryBase.TagExposureTime from ExifSubIfdDirectory
@@ -30,11 +30,24 @@ namespace IndexingModule
     {
         string path;
         IReadOnlyList<Directory> metadata;
+        MetaData metaData;
         public Image(string path)
         {
             this.path = path;
             metadata = ImageMetadataReader.ReadMetadata(path);
-            Console.WriteLine(GetFlash());
+            metaData = new();
+            metaData.DateCreation = GetDateTime();
+            metaData.Manufacturer = GetManufacturer();
+            metaData.Model = GetModel();
+            metaData.Orientation = GetOrientation();
+            metaData.FocalLength = GetFocalLength();
+            metaData.ISO = GetISO();
+            metaData.TimeExposureDenominator = GetTimeExposureDenominator();
+            metaData.TimeExposureNumerator = GetTimeExposureNumerator();
+            metaData.FNumber = GetFNumber();
+            metaData.Flash = GetFlash();
+            metaData.Latitude = GetLatitude();
+            metaData.Longitude = GetLongitude();
         }
 
         public int GetFlash()
@@ -59,13 +72,13 @@ namespace IndexingModule
             return -1;
         }
 
-        public double GetTimeExposureNumerator()
+        public int GetTimeExposureNumerator()
         {
             var directory = metadata.OfType<ExifSubIfdDirectory>().FirstOrDefault();
             if (directory != null)
             {
                 if (directory.ContainsTag(ExifDirectoryBase.TagExposureTime))
-                    return directory.GetRational(ExifDirectoryBase.TagExposureTime).Numerator;
+                    return (int)directory.GetRational(ExifDirectoryBase.TagExposureTime).Numerator;
             }
             return -1;
         }
@@ -148,35 +161,49 @@ namespace IndexingModule
             return DateTime.MinValue;
         }
 
-        private double GetLatitude()
+        private float GetLatitude()
         {
             var image = System.Drawing.Image.FromFile(path);
-            var latitude = image.GetPropertyItem((int)2);
-            return GetGeoTag(latitude);
+            try
+            {
+                PropertyItem latitude = image.GetPropertyItem((int)2);
+                return GetGeoTag(latitude);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
-        private double GetLongitude()
+        private float GetLongitude()
         {
             var image = System.Drawing.Image.FromFile(path);
-            var longitude = image.GetPropertyItem((int)4);
-            return GetGeoTag(longitude);
+            try
+            {
+                PropertyItem longitude = image.GetPropertyItem((int)4);
+                return GetGeoTag(longitude);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
-        private static double GetGeoTag(PropertyItem propItem)
+        private static float GetGeoTag(PropertyItem propItem)
         {
             uint degreesNumerator = BitConverter.ToUInt32(propItem.Value, 0);
             uint degreesDenominator = BitConverter.ToUInt32(propItem.Value, 4);
-            double degrees = degreesNumerator / (double)degreesDenominator;
+            float degrees = degreesNumerator / (float)degreesDenominator;
 
             uint minutesNumerator = BitConverter.ToUInt32(propItem.Value, 8);
             uint minutesDenominator = BitConverter.ToUInt32(propItem.Value, 12);
-            double minutes = minutesNumerator / (double)minutesDenominator;
+            float minutes = minutesNumerator / (float)minutesDenominator;
 
             uint secondsNumerator = BitConverter.ToUInt32(propItem.Value, 16);
             uint secondsDenominator = BitConverter.ToUInt32(propItem.Value, 20);
-            double seconds = secondsNumerator / (double)secondsDenominator;
+            float seconds = secondsNumerator / (float)secondsDenominator;
 
-            double coorditate = degrees + (minutes / 60d) + (seconds / 3600d);
+            float coorditate = degrees + (minutes / 60) + (seconds / 3600);
             string gpsRef = System.Text.Encoding.ASCII.GetString(new byte[1] { propItem.Value[0] }); //N, S, E, or W  
 
             if (gpsRef == "S" || gpsRef == "W")
@@ -184,6 +211,24 @@ namespace IndexingModule
                 coorditate = coorditate * -1;
             }
             return coorditate;
+        }
+
+        public override string ToString()
+        {
+            string s = $"Путь - {path}.\n========================\n";
+            s = s + $"Производитель - {metaData.Manufacturer}\n";
+            s = s + $"Модель - {metaData.Model}\n";
+            s = s + $"Ориентация - {metaData.Orientation}\n";
+            s = s + $"Фокусное расстояние - {metaData.FocalLength}\n";
+            s = s + $"ISO - {metaData.ISO}\n";
+            s = s + $"Числитель времени экспозиции - {metaData.TimeExposureNumerator}\n";
+            s = s + $"Делитель времени экспозиции - {metaData.TimeExposureDenominator}\n";
+            s = s + $"Относительное отверстие - {metaData.FNumber}\n";
+            s = s + $"Вспышка - {metaData.Flash}\n";
+            s = s + $"Широта - {metaData.Latitude}\n";
+            s = s + $"Долгота - {metaData.Longitude}\n";
+            s = s + $"===========================================\n";
+            return s;
         }
     }
 }
