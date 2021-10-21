@@ -29,9 +29,9 @@ namespace IndexingModule
             return false;
         }
 
-        public List<string> IndexingDirectory(string path)
+        public List<Image> IndexingDirectory(string path)
         {
-            List<string> images = new();
+            List<Image> images = new();
 
             var scannedResultsRoot = scanning.ScanningDirectory(path);
             scanningResults.Add(scannedResultsRoot);
@@ -47,7 +47,7 @@ namespace IndexingModule
                 {
                     if (CheckImage(file))
                     {
-                        images.Add(file);
+                        images.Add(new Image(file));
                     }
                 }
             }
