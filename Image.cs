@@ -151,15 +151,29 @@ namespace IndexingModule
         public double GetLatitude()
         {
             var image = System.Drawing.Image.FromFile(path);
-            var latitude = image.GetPropertyItem((int)2);
-            return GetGeoTag(latitude);
+            try
+            {
+                var latitude = image.GetPropertyItem((int)2);
+                return GetGeoTag(latitude);
+            } catch (Exception)
+            {
+                return -1;
+            }
+            
         }
 
         public double GetLongitude()
         {
             var image = System.Drawing.Image.FromFile(path);
-            var longitude = image.GetPropertyItem((int)4);
-            return GetGeoTag(longitude);
+            try
+            {
+                var longitude = image.GetPropertyItem((int)4);
+                return GetGeoTag(longitude);
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public static double GetGeoTag(PropertyItem propItem)
