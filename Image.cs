@@ -92,7 +92,7 @@ namespace IndexingModule
             return -1;
         }
 
-        private double GetFocalLength()
+        public double GetFocalLength()
         {
             var directory = metadata.OfType<ExifSubIfdDirectory>().FirstOrDefault();
             if (directory != null)
@@ -103,7 +103,7 @@ namespace IndexingModule
             return -1;
         }
 
-        private int GetOrientation()
+        public int GetOrientation()
         {
             var directory = metadata.OfType<ExifIfd0Directory>().FirstOrDefault();
             if (directory != null)
@@ -114,7 +114,7 @@ namespace IndexingModule
             return -1;
         }
 
-        private string GetModel()
+        public string GetModel()
         {
             var directory = metadata.OfType<ExifDirectoryBase>().FirstOrDefault();
             if (directory != null)
@@ -125,7 +125,7 @@ namespace IndexingModule
             return "";
         }
 
-        private string GetManufacturer()
+        public string GetManufacturer()
         {
             var directory = metadata.OfType<ExifIfd0Directory>().FirstOrDefault();
             if (directory != null)
@@ -136,7 +136,7 @@ namespace IndexingModule
             return "";
         }
 
-        private DateTime GetDateTime()
+        public DateTime GetDateTime()
         {
             
             var directory = metadata.OfType<ExifSubIfdDirectory>().FirstOrDefault();
@@ -148,21 +148,21 @@ namespace IndexingModule
             return DateTime.MinValue;
         }
 
-        private double GetLatitude()
+        public double GetLatitude()
         {
             var image = System.Drawing.Image.FromFile(path);
             var latitude = image.GetPropertyItem((int)2);
             return GetGeoTag(latitude);
         }
 
-        private double GetLongitude()
+        public double GetLongitude()
         {
             var image = System.Drawing.Image.FromFile(path);
             var longitude = image.GetPropertyItem((int)4);
             return GetGeoTag(longitude);
         }
 
-        private static double GetGeoTag(PropertyItem propItem)
+        public static double GetGeoTag(PropertyItem propItem)
         {
             uint degreesNumerator = BitConverter.ToUInt32(propItem.Value, 0);
             uint degreesDenominator = BitConverter.ToUInt32(propItem.Value, 4);
