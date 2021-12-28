@@ -28,7 +28,7 @@ namespace IndexingModule
     }
     class Image
     {
-        string path;
+        public string path;
         IReadOnlyList<Directory> metadata;
         public Image(string path)
         {
