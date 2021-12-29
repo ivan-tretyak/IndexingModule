@@ -150,12 +150,12 @@ namespace IndexingModule
 
         public double GetLatitude()
         {
-            var image = System.Drawing.Image.FromFile(path);
+            var directory = metadata.OfType<GpsDirectory>()
+                             .FirstOrDefault();
             try
             {
-                var latitude = image.GetPropertyItem((int)2);
-                image.Dispose();
-                return GetGeoTag(latitude);
+                var gps = directory.GetGeoLocation();
+                return gps.Latitude;
             } catch (Exception)
             {
                 return -1;
@@ -165,41 +165,17 @@ namespace IndexingModule
 
         public double GetLongitude()
         {
-            var image = System.Drawing.Image.FromFile(path);
+            var directory = metadata.OfType<GpsDirectory>()
+                             .FirstOrDefault();
             try
             {
-                var longitude = image.GetPropertyItem((int)4);
-                image.Dispose();
-                return GetGeoTag(longitude);
+                var gps = directory.GetGeoLocation();
+                return gps.Longitude;
             }
             catch (Exception)
             {
                 return -1;
             }
-        }
-
-        public static double GetGeoTag(PropertyItem propItem)
-        {
-            uint degreesNumerator = BitConverter.ToUInt32(propItem.Value, 0);
-            uint degreesDenominator = BitConverter.ToUInt32(propItem.Value, 4);
-            double degrees = degreesNumerator / (double)degreesDenominator;
-
-            uint minutesNumerator = BitConverter.ToUInt32(propItem.Value, 8);
-            uint minutesDenominator = BitConverter.ToUInt32(propItem.Value, 12);
-            double minutes = minutesNumerator / (double)minutesDenominator;
-
-            uint secondsNumerator = BitConverter.ToUInt32(propItem.Value, 16);
-            uint secondsDenominator = BitConverter.ToUInt32(propItem.Value, 20);
-            double seconds = secondsNumerator / (double)secondsDenominator;
-
-            double coorditate = degrees + (minutes / 60d) + (seconds / 3600d);
-            string gpsRef = System.Text.Encoding.ASCII.GetString(new byte[1] { propItem.Value[0] }); //N, S, E, or W  
-
-            if (gpsRef == "S" || gpsRef == "W")
-            {
-                coorditate = coorditate * -1;
-            }
-            return coorditate;
         }
     }
 }
