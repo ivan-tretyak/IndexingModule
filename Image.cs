@@ -154,6 +154,7 @@ namespace IndexingModule
             try
             {
                 var latitude = image.GetPropertyItem((int)2);
+                image.Dispose();
                 return GetGeoTag(latitude);
             } catch (Exception)
             {
@@ -168,6 +169,7 @@ namespace IndexingModule
             try
             {
                 var longitude = image.GetPropertyItem((int)4);
+                image.Dispose();
                 return GetGeoTag(longitude);
             }
             catch (Exception)
