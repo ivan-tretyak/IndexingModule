@@ -1,9 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="LICENSE" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.7.1" />
