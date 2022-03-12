@@ -71,6 +71,25 @@ namespace IndexingModule
             return images;
         }
 
+        private string Prefix(int i)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                return new string(Enumerable.Repeat(chars, i)
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        public List<Image> CopyImage(List<Image> images, string destPath)
+        {
+            foreach(Image image in images)
+            {
+                String name = Path.GetFileName(image.path);
+                File.Copy(image.path, $"{destPath}{Path.DirectorySeparatorChar}{Prefix(5)}{name}");
+                image.path = $"{destPath}{Path.DirectorySeparatorChar}{Prefix(5)}{name}";
+            }
+            return images;
+        }
+
         private void empty()
         {
             scanningResults = new();

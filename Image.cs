@@ -92,28 +92,54 @@ namespace IndexingModule
 
         public IValue ReadMetadata(ExifDirectoryBase directory, int tag)
         {
-            if (directory != null && directory.ContainsTag(tag))
+            switch (tag)
             {
-                switch (tag)
-                {
-                    case 37_385:
-                    case 274:
+                case 37_385:
+                case 274:
+                    if (directory != null && directory.ContainsTag(tag))
+                    {
                         return new IntValue(directory.GetInt32(tag));
-                    case 37_386:
+                    }
+                    else
+                    {
+                        return new IntValue(-1);
+                    }
+
+                case 37_386:
+                    if (directory != null && directory.ContainsTag(tag))
+                    {
                         return new DoubleValue(directory.GetRational(tag).ToDouble());
-                    case 272:
-                    case 271:
+                    }
+                    else
+                    {
+                        return new DoubleValue(-1.0);
+                    }
+                case 272:
+                case 271:
+                    if (directory != null && directory.ContainsTag(tag))
+                    {
                         return new StringValue(directory.GetString(tag));
-                    case 36_867:
+                    }
+                    else
+                    {
+                        return new StringValue("");
+                    }
+                case 36_867:
+                    if (directory != null && directory.ContainsTag(tag))
+                    {
                         if (directory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var dateTime))
                             return new DateTimeValue(dateTime);
                         return new DateTimeValue(DateTime.MinValue);
-                    default:
-                        return new DoubleValue(-1.0);
-                }
+                    }
+                    else
+                    {
+                        return new DateTimeValue(DateTime.MinValue);
+                    }
+                default:
+                    return new DoubleValue(-1.0);
             }
-            return new DoubleValue(-1.0);
         }
+
         public IValue FabricMethod(GpsDirectory directory, string coordinate)
         {
             try
