@@ -29,10 +29,12 @@ namespace IndexingModule
     {
         Scanning scanning;
         List<ScanningResults> scanningResults;
+        List<Image> images = new();
         public Indexing()
         {
             scanning = new();
             scanningResults = new();
+            List<Image> images = new(0);
         }
 
         private bool CheckImage(string path)
@@ -47,7 +49,7 @@ namespace IndexingModule
 
         public List<Image> IndexingDirectory(string path)
         {
-            List<Image> images = new();
+            //List<Image> images = new();
 
             var scannedResultsRoot = scanning.ScanningDirectory(path);
             scanningResults.Add(scannedResultsRoot);
